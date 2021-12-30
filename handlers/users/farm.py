@@ -6,7 +6,7 @@ from aiogram.utils.markdown import hbold, text
 
 from loader import dp, db
 
-from keyboards.inline.profile_keyboard import profile_callback
+from keyboards.inline.profile_buttons import profile_callback
 from keyboards.default.farm_keyboard import farm_keyboard
 
 from models.get_user_info import get_resource, get_animals
@@ -62,6 +62,7 @@ async def garden(message: types.Message) -> None:
     ]), reply_markup=InlineKeyboardMarkup(row_width=1, inline_keyboard=[ # Создаем клавиатуру для функции сбора шерсти
         [InlineKeyboardButton(text="Добыть шерсть", callback_data=sheep_callback.new("get")), InlineKeyboardButton(text="Собрать шерсть", callback_data=sheep_callback.new("cath"))]
     ]))
+    await message.delete()
 
 @dp.callback_query_handler(sheep_callback.filter(get_wool="get"))
 async def get_wool(call: types.CallbackQuery) -> None:
@@ -71,24 +72,29 @@ async def get_wool(call: types.CallbackQuery) -> None:
         wool_for_catch = db.execute("SELECT wool FROM temp_items WHERE user_id=?", params=(call.from_user.id, ), fethcone=True)[0] # шерсть для сбора
         db.execute(f"UPDATE temp_items SET wool = {wool_for_catch + sheep_give} WHERE user_id=?", params=(call.from_user.id, ), commit=True) # добавляем добытую шерсть
         await call.answer(f"Вы добыли {sheep_give} шерсть(-и)")
+        await call.answer()
     else:
         await call.answer("У вас нет овец, чтобы добывать шерсть")
+        await call.answer()
 
 @dp.callback_query_handler(sheep_callback.filter(get_wool="cath"))
-async def catch_wool(message: types.Message) -> None:
+async def catch_wool(call: types.CallbackQuery) -> None:
     """Функция сбора шерсти."""
-    sheep_give = get_animals(message.from_user.id, "sheep")
-    barn_accumulation = get_resource(message.from_user.id, "barn_accumulation") # 150
-    if db.execute("SELECT barn_accumulation FROM users WHERE id=?", params=(message.from_user.id, ), fethcone=True)[0] > sheep_give: # Проверяем место в амбаре
+    sheep_give = get_animals(call.from_user.id, "sheep")
+    barn_accumulation = get_resource(call.from_user.id, "barn_accumulation") # 150
+    if db.execute("SELECT barn_accumulation FROM users WHERE id=?", params=(call.from_user.id, ), fethcone=True)[0] > sheep_give: # Проверяем место в амбаре
         if wool_for_catch >= 1: # Проверяем количество шерсти. Должна быть хотя-бы одна штука
-            db.execute(f"UPDATE user_items SET wool = {wool_count + wool_for_catch} WHERE user_id=?", params=(message.from_user.id, ), commit=True) # Добавляем шерсть игроку в амбар
-            db.execute(f"UPDATE users SET barn_accumulation = {barn_accumulation - wool_for_catch}", commit=True) # Убираем место из амбара
-            db.execute(f"UPDATE temp_items SET wool = 0 WHERE user_id=?", params=(message.from_user.id, ), commit=True) # Обнуляем временную шерсть
-            await message.answer("Вы успешно собрали всю шерсть!")
+            db.execute(f"UPDATE user_items SET wool = {wool_count + wool_for_catch} WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Добавляем шерсть игроку в амбар
+            db.execute(f"UPDATE users SET barn_accumulation = barn_accumulation - {wool_for_catch}", commit=True) # Убираем место из амбара
+            db.execute(f"UPDATE temp_items SET wool = 0 WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Обнуляем временную шерсть
+            await call.answer("Вы успешно собрали всю шерсть!")
+            await call.answer()
         else:
-            await message.answer("Нечего собирать")
+            await call.answer("Нечего собирать")
+            await call.answer()
     else:
-        await message.answer("Вам не хватает места в амбаре")
+        await call.answer("Вам не хватает места в амбаре")
+        await call.answer()
 # ================================================
 
 
@@ -97,7 +103,7 @@ chicken_callback = CallbackData("chicken", "get_eggs") # Коллбэк для �
 
 @dp.message_handler(text="Курятник")
 async def chicken_coop(message: types.Message) -> None:
-    if db.execute("SELECT chicken_coop FROM buildings WHERE user_id=?", params=(message.from_user.id, ), fethcone=True)[0] >= 1:
+    if db.execute("SELECT chicken_coop FROM buildings WHERE user_id=?", params=(message.from_user.id, ), fethcone=True)[0] == 1:
         global eggs_count, eggs_for_catch
         chicken_count = get_animals(message.from_user.id, "chicken") # Получаем количество наших куриц
 
@@ -151,7 +157,7 @@ cow_callback = CallbackData("cow", "get_milk") # Коллбэк для кноп�
 
 @dp.message_handler(text="Коровник")
 async def cowshed(message: types.Message) -> None:
-    if db.execute("SELECT cowshed FROM buildings WHERE user_id=?", params=(message.from_user.id, ), fethcone=True)[0] >= 1:
+    if db.execute("SELECT cowshed FROM buildings WHERE user_id=?", params=(message.from_user.id, ), fethcone=True)[0] == 1:
         global milk_count, milk_for_catch
         cows_count = get_animals(message.from_user.id, "cow") # Получаем количество наших коров
 

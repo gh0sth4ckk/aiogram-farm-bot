@@ -2,8 +2,6 @@
 Стартовый файл запуска B0T'a
 """
 from loader import dp
-from loader import farm
-import time
 
 async def on_startup(dp) -> None:
     """Функция сработает при включении бота."""
@@ -17,6 +15,7 @@ async def on_startup(dp) -> None:
     from utils.set_bot_commands import set_default_commands
     await on_startup_notify(dp)     # Установка админского оповещения при включении бота
     await set_default_commands(dp)  # Установка команд которые будут видны при нажатии "/"
+
 
 if __name__ == '__main__':
     from aiogram import executor

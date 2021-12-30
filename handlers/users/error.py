@@ -1,7 +1,7 @@
 from aiogram import types
 
 from loader import dp
-from keyboards.inline.help_keyboard import help_keyboard, help_callback
+from keyboards.inline.help_buttons import help_keyboard, help_callback
 
 @dp.message_handler()
 async def error(message: types.Message) -> None:

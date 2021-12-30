@@ -14,13 +14,11 @@ async def bot_start_bonus(message: types.Message) -> None:
     # дополнительные ресурсы
     coins_vip = 150
     wood_vip = 150
-    food_vip = 100
     barn_accamulation_vip = 50
 
     level = 0
     coins = 200
     wood = 100
-    food = 50
     barn_accamulation = 150
 
     greeting_text = f"""
@@ -31,7 +29,6 @@ async def bot_start_bonus(message: types.Message) -> None:
 Вот тебе ресуры для начала:
 Монеты: {hbold(coins)} + {hbold(coins_vip)} дополнительных монет
 Дерево: {hbold(wood)} + {hbold(wood_vip)} дополнительного дерева
-Еда: {hbold(food)} + {hbold(food_vip)} дополнительной еды
 Вместиость амбара: {hbold(barn_accamulation)} + {hbold(barn_accamulation_vip)} дополнительного места
 
 Пиши /profile, чтобы перейти в профиль. Встретимся там!
@@ -39,7 +36,7 @@ async def bot_start_bonus(message: types.Message) -> None:
     if db.execute("SELECT id FROM users WHERE id=?", params=(user_id, ), fethcone=True):
         await message.answer("Сэр, но вы не можете начать все сначала!")
     else:
-        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?)", params=(user_id, user_fullname, level, coins+coins_vip, wood+wood_vip, food+food_vip, barn_accamulation+barn_accamulation_vip), commit=True)
+        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, )", params=(user_id, user_fullname, level, coins+coins_vip, wood+wood_vip, barn_accamulation+barn_accamulation_vip), commit=True)
         db.execute("INSERT INTO buildings VALUES(?, ?, ?, ?, ?)", params=(user_id, 1, 1, 0, 0), commit=True)
         db.execute("INSERT INTO animals VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)
         db.execute("INSERT INTO user_items VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)
@@ -54,7 +51,6 @@ async def bot_start(message: types.Message) -> None:
     level = 0
     coins = 200
     wood = 100
-    food = 50
     barn_accamulation = 150
 
     greeting_text = f"""
@@ -65,7 +61,6 @@ async def bot_start(message: types.Message) -> None:
 Вот тебе ресуры для начала:
 Монеты: {hbold(coins)}
 Дерево: {hbold(wood)}
-Еда: {hbold(food)}
 Вместиость амбара: {hbold(barn_accamulation)}
 
 Пиши /profile, чтобы перейти в профиль. Встретимся там!
@@ -74,7 +69,7 @@ async def bot_start(message: types.Message) -> None:
     if db.execute("SELECT id FROM users WHERE id=?", params=(user_id, ), fethcone=True):
         await message.answer("Сэр, вы не можете начать все сначала!")
     else:
-        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?)", params=(user_id, user_fullname, level, coins, wood, food, barn_accamulation), commit=True)
+        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?)", params=(user_id, user_fullname, level, coins, wood, barn_accamulation), commit=True)
         db.execute("INSERT INTO buildings VALUES(?, ?, ?, ?, ?)", params=(user_id, 1, 1, 0, 0), commit=True)
         db.execute("INSERT INTO animals VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)
         db.execute("INSERT INTO user_items VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)

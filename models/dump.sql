@@ -4,7 +4,6 @@ CREATE TABLE "users" (
 	"level"	INT NOT NULL,
 	"coins"	INT NOT NULL,
 	"wood"	INT NOT NULL,
-	"food"	INT NOT NULL,
 	"barn_accumulation"	INT NOT NULL,
 	PRIMARY KEY("id")
 );
