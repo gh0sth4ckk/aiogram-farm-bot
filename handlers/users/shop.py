@@ -1,13 +1,12 @@
 from aiogram import types
-from aiogram.types import reply_keyboard
 
 from loader import dp, db
 
 from keyboards.inline.profile_buttons import profile_callback
 
 from keyboards.inline.shop_buttons import shop_callback, shop_keyboard
+from keyboards.inline.shop_buttons import wood_callback, wood_shop_keyboard
 from keyboards.inline.shop_buttons import houses_callback, house_shop_keyboard
-
 from keyboards.inline.shop_buttons import animals_callback, animals_shop_keyboard
 
 from models.get_user_info import get_resource
@@ -16,13 +15,31 @@ from models.get_user_info import get_resource
 async def user_shop(call: types.CallbackQuery) -> None:
     await dp.bot.send_message(call.from_user.id, "Вот, что ты можешь найти в магазин", reply_markup=shop_keyboard)
 
+# ПОКУПКА БРЕВЕН
+wood_cost = 20
+@dp.callback_query_handler(shop_callback.filter(shop_type="wood"))
+async def shop_wood(call: types.CallbackQuery) -> None:
+    await call.message.answer(f"5 досок стоят <b>{wood_cost}</b>монет", reply_markup=wood_shop_keyboard)
+
+@dp.callback_query_handler(wood_callback.filter(wood="wood"))
+async def wood_buying(call: types.CallbackQuery) -> None:
+    user_coins = get_resource(call.from_user.id, "coins")
+    if not user_coins < wood_cost:
+        db.execute(f"UPDATE users SET coins = coins - {wood_cost} WHERE id=?", params=(call.from_user.id, ), commit=True) # Забираем монеты у пользователя
+        db.execute(f"UPDATE users SET wood = wood + 5 WHERE id=?", params=(call.from_user.id, ), commit=True) # Даем пользователю доски
+        await call.answer("Вы купили 5 досок")
+        await call.answer()
+    else:
+        await call.answer("У вас недостаточно денег для покупки досок")
+        await call.answer()
+
 
 # МАГАЗИН ДОМОВ
-chicken_coop_coins_cost = 30
-chicken_coop_wood_cost = 20
+chicken_coop_coins_cost = 30 # Стоимость курятника в монетах
+chicken_coop_wood_cost = 20 # Стоимость курятника в досках
 
-cowshed_coins_cost = 60
-cowshed_wood_cost = 45
+cowshed_coins_cost = 60 # Стоимость коровника в монетах
+cowshed_wood_cost = 45 # Стоимость коровника в досках
 
 @dp.callback_query_handler(shop_callback.filter(shop_type="houses"))
 async def shop_houses(call: types.CallbackQuery) -> None:
@@ -79,9 +96,9 @@ async def cowshed_buy(call: types.callback_query) -> None:
 
 
 # МАГАЗИН ЖИВОТНЫХ
-sheep_cost = 10
-chicken_cost = 16
-cow_cost = 27
+sheep_cost = 10 # Стоимость овцы
+chicken_cost = 16 # Стоимость курицы
+cow_cost = 27 # Стоимость коровы
 
 @dp.callback_query_handler(shop_callback.filter(shop_type="animals"))
 async def shop_animals(call: types.Message) -> None:
@@ -104,7 +121,8 @@ async def sheep_buying(call: types.CallbackQuery) -> None:
     if not user_coins < sheep_cost:
         db.execute(f"UPDATE users SET coins = coins - {sheep_cost} WHERE id=?", params=(call.from_user.id, ), commit=True) # Забираем деньги у пользователя
         db.execute(f"UPDATE animals SET sheep = sheep + 1 WHERE user_id=?", params=(call.from_user.id, ), commit=True)
-        await call.message.answer("Вы купили одну овцу")
+        await call.answer("Вы купили одну овцу")
+        await call.answer()
     else:
         await call.answer("Вам не хватает денег")
 
@@ -117,7 +135,8 @@ async def chicken_buying(call: types.CallbackQuery) -> None:
     if not user_coins < chicken_cost:
         db.execute(f"UPDATE users SET coins = coins - {chicken_cost} WHERE id=?", params=(call.from_user.id, ), commit=True) # Забираем деньги у пользователя
         db.execute(f"UPDATE animals SET chicken = chicken + 1 WHERE user_id=?", params=(call.from_user.id, ), commit=True)
-        await call.message.answer("Вы купили одну курицу")
+        await call.answer("Вы купили одну курицу")
+        await call.answer()
     else:
         await call.answer("Вам не хватает денег")
 
@@ -130,7 +149,7 @@ async def cow_buying(call: types.CallbackQuery) -> None:
     if not user_coins < cow_cost:
         db.execute(f"UPDATE users SET coins = coins - {cow_cost} WHERE id=?", params=(call.from_user.id, ), commit=True) # Забираем деньги у пользователя
         db.execute(f"UPDATE animals SET cow = cow + 1 WHERE user_id=?", params=(call.from_user.id, ), commit=True)
-        await call.message.answer("Вы купили одну корову")
+        await call.answer("Вы купили одну корову")
         await call.answer()
     else:
         await call.answer("Вам не хватает денег")

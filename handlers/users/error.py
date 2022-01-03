@@ -1,7 +1,15 @@
+"""
+Сообщение, которое будет вылазить при неизвестном боту сообщении
+"""
 from aiogram import types
 
 from loader import dp
 from keyboards.inline.help_buttons import help_keyboard, help_callback
+
+game_guide = """
+КАК ИГРАТЬ?
+
+"""
 
 @dp.message_handler()
 async def error(message: types.Message) -> None:
@@ -10,7 +18,8 @@ async def error(message: types.Message) -> None:
 
 @dp.callback_query_handler(help_callback.filter(btn="guide"))
 async def user_guide(message: types.Message) -> None:
-    await dp.bot.send_message(message.from_user.id, "тут будет небольшой гайд...")
+    await dp.bot.send_message(message.from_user.id, game_guide)
+
 
 @dp.callback_query_handler(help_callback.filter(btn="commands"))
 async def user_commands(message: types.Message) -> None:
