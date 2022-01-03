@@ -135,10 +135,10 @@ async def get_eggs(call: types.CallbackQuery) -> None:
         eggs_for_catch = db.execute("SELECT egg FROM temp_items WHERE user_id=?", params=(call.from_user.id, ), fethcone=True)[0]
         db.execute(f"UPDATE temp_items SET egg = {eggs_for_catch + chicken_give} WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Добываем яйца
         await call.answer(f"Вы добыли {chicken_give} яиц")
-        await message.answer()
+        await call.answer()
     else:
         await call.answer("У вас нет куриц, чтобы добывать яйца")
-        await message.answer()
+        await call.answer()
 
 @dp.callback_query_handler(chicken_callback.filter(get_eggs="cath"))
 async def catch_eggs(message: types.Message) -> None:
@@ -198,10 +198,10 @@ async def get_milk(call: types.CallbackQuery) -> None:
         milk_for_catch = db.execute("SELECT milk FROM temp_items WHERE user_id=?", params=(call.from_user.id, ), fethcone=True)[0]
         db.execute(f"UPDATE temp_items SET milk = {milk_for_catch + cow_give} WHERE user_id=?", params=(call.from_user.id, ), commit=True)
         await call.answer(f"Вы добыли {cow_give}мл молока")
-        await message.answer()
+        await call.answer()
     else:
         await call.answer("У вас нет коров, чтобы добывать молоко")
-        await message.answer()
+        await call.answer()
 
 @dp.callback_query_handler(cow_callback.filter(get_milk="cath"))
 async def catch_milk(message: types.Message) -> None:
