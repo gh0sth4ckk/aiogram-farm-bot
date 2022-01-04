@@ -6,20 +6,23 @@ from keyboards.inline.profile_buttons import profile_callback
 
 from keyboards.inline.shop_buttons import shop_callback, shop_keyboard
 from keyboards.inline.shop_buttons import wood_callback, wood_shop_keyboard
+from keyboards.inline.shop_buttons import barn_callback, barn_shop_keyboard
 from keyboards.inline.shop_buttons import houses_callback, house_shop_keyboard
 from keyboards.inline.shop_buttons import animals_callback, animals_shop_keyboard
 
 from models.get_user_info import get_resource
 
+
 @dp.callback_query_handler(profile_callback.filter(btn="shop"))
 async def user_shop(call: types.CallbackQuery) -> None:
     await dp.bot.send_message(call.from_user.id, "Вот, что ты можешь найти в магазин", reply_markup=shop_keyboard)
+
 
 # ПОКУПКА БРЕВЕН
 wood_cost = 20
 @dp.callback_query_handler(shop_callback.filter(shop_type="wood"))
 async def shop_wood(call: types.CallbackQuery) -> None:
-    await call.message.answer(f"5 досок стоят <b>{wood_cost}</b>монет", reply_markup=wood_shop_keyboard)
+    await call.message.answer(f"5 досок стоят <b>{wood_cost}</b> монет", reply_markup=wood_shop_keyboard)
 
 @dp.callback_query_handler(wood_callback.filter(wood="wood"))
 async def wood_buying(call: types.CallbackQuery) -> None:
@@ -31,6 +34,24 @@ async def wood_buying(call: types.CallbackQuery) -> None:
         await call.answer()
     else:
         await call.answer("У вас недостаточно денег для покупки досок")
+        await call.answer()
+
+# ПОКУПКА МЕСТА В АМБАРЕ
+barn_place_cost = 40
+@dp.callback_query_handler(shop_callback.filter(shop_type="barn"))
+async def shop_barn(call: types.CallbackQuery) -> None:
+    await call.message.answer(f"Дополнительные 10 мест в амбаре стоят <b>{barn_place_cost}</b> монет", reply_markup=barn_shop_keyboard)
+
+@dp.callback_query_handler(barn_callback.filter(barn="barn"))
+async def barn_buying(call: types.CallbackQuery) -> None:
+    user_coins = get_resource(call.from_user.id, "coins")
+    if not user_coins < barn_place_cost:
+        db.execute(f"UPDATE users SET coins = coins - {barn_place_cost} WHERE id=?", params=(call.from_user.id, ), commit=True) # Забираем монеты у пользователя
+        db.execute(f"UPDATE users SET barn_accumulation = barn_accumulation + 10 WHERE id=?", params=(call.from_user.id, ), commit=True) # Даем пользователю доп. место
+        await call.answer("Вы купили 10 дополнительных мест в амбаре")
+        await call.answer()
+    else:
+        await call.answer("У вас недостаточно денег для покупки дополнительного места в амбаре")
         await call.answer()
 
 

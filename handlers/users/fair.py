@@ -7,6 +7,8 @@ from loader import dp, db
 from keyboards.inline.profile_buttons import profile_callback
 from keyboards.inline.fair_buttons import fair_callback, fair_keyboard
 
+from models.get_user_info import get_item
+
 # стоимость ресурсов в монетах
 one_wool_cost = 2
 one_egg_cost = 4
@@ -14,15 +16,18 @@ one_milk_cost = 7
 
 @dp.callback_query_handler(profile_callback.filter(btn="fair"))
 async def fair(message: types.Message) -> None:
+    """Главная функция ярмарки."""
     global wool_for_sale
     global eggs_for_sale
     global milk_for_sale
 
     userid = message.from_user.id
-    user_wool = db.execute("SELECT wool FROM user_items WHERE user_id=?", params=(userid, ), fethcone=True)[0]
-    user_eggs = db.execute("SELECT egg FROM user_items WHERE user_id=?", params=(userid, ), fethcone=True)[0]
-    user_milk = db.execute("SELECT milk FROM user_items WHERE user_id=?", params=(userid, ), fethcone=True)[0]
+    user_wool = get_item(userid, "wool")
+    user_eggs = get_item(userid, "egg")
+    user_milk = get_item(userid, "milk")
 
+    # Количество монет которое можно получить при продаже
+    # кол-во ресурса у игрока * стоимость одного ресурса
     wool_for_sale = user_wool * one_wool_cost
     eggs_for_sale = user_eggs * one_egg_cost
     milk_for_sale = user_milk * one_milk_cost
