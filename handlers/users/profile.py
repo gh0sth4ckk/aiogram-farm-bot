@@ -6,12 +6,16 @@ from aiogram.utils.markdown import hbold
 from loader import dp
 from models.get_user_info import get_resource
 
+from level import update_level
+
 from keyboards.inline.profile_buttons import profile_keyboard
 
 @dp.message_handler(Command("profile"))
 async def get_user_profile(message: types.Message) -> None:
     username = message.from_user.full_name
     userid = message.from_user.id
+
+    update_level(userid) # обновляем уровень игрока
 
     level = get_resource(userid, "level")
     coins = get_resource(userid, "coins")

@@ -17,6 +17,7 @@ async def bot_start_bonus(message: types.Message) -> None:
     barn_accamulation_vip = 50
 
     level = 0
+    points = 0 # очки опыта
     coins = 200
     wood = 100
     barn_accamulation = 150
@@ -36,7 +37,7 @@ async def bot_start_bonus(message: types.Message) -> None:
     if db.execute("SELECT id FROM users WHERE id=?", params=(user_id, ), fethcone=True):
         await message.answer("Сэр, но вы не можете начать все сначала!")
     else:
-        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, )", params=(user_id, user_fullname, level, coins+coins_vip, wood+wood_vip, barn_accamulation+barn_accamulation_vip), commit=True)
+        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?)", params=(user_id, user_fullname, level, points, coins+coins_vip, wood+wood_vip, barn_accamulation+barn_accamulation_vip), commit=True)
         db.execute("INSERT INTO buildings VALUES(?, ?, ?, ?, ?)", params=(user_id, 1, 1, 0, 0), commit=True)
         db.execute("INSERT INTO animals VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)
         db.execute("INSERT INTO user_items VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)
@@ -49,6 +50,7 @@ async def bot_start(message: types.Message) -> None:
     user_id = message.from_user.id
     user_fullname = message.from_user.full_name
     level = 0
+    points = 0
     coins = 200
     wood = 100
     barn_accamulation = 150
@@ -69,7 +71,7 @@ async def bot_start(message: types.Message) -> None:
     if db.execute("SELECT id FROM users WHERE id=?", params=(user_id, ), fethcone=True):
         await message.answer("Сэр, вы не можете начать все сначала!")
     else:
-        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?)", params=(user_id, user_fullname, level, coins, wood, barn_accamulation), commit=True)
+        db.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?)", params=(user_id, user_fullname, level, points, coins, wood, barn_accamulation), commit=True)
         db.execute("INSERT INTO buildings VALUES(?, ?, ?, ?, ?)", params=(user_id, 1, 1, 0, 0), commit=True)
         db.execute("INSERT INTO animals VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)
         db.execute("INSERT INTO user_items VALUES(?, ?, ?, ?)", params=(user_id, 0, 0, 0), commit=True)

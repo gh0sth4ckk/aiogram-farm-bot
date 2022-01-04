@@ -1,7 +1,7 @@
 from loader import db
 
 def get_resource(userid: str, resource: str) -> int:
-    """Получаем оперделенный ресурс из бд. `userid`=id пользователя, `resource={wood, coins, level, barn_accumulation}`"""
+    """Получаем оперделенный ресурс из бд. `userid`=id пользователя, `resource={wood, coins, level, points, barn_accumulation}`"""
     user_resource = db.execute(sql=f"SELECT {resource} FROM users WHERE id=?", params=(userid, ), fethcone=True)
     return user_resource[0]
 

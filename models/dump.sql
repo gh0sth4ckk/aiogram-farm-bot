@@ -2,6 +2,7 @@ CREATE TABLE "users" (
 	"id"	INT NOT NULL ,
 	"nick"	varchar(255) NOT NULL,
 	"level"	INT NOT NULL,
+	"points" INT NOT NULL,
 	"coins"	INT NOT NULL,
 	"wood"	INT NOT NULL,
 	"barn_accumulation"	INT NOT NULL,

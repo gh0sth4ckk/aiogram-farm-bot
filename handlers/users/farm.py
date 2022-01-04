@@ -147,9 +147,9 @@ async def catch_eggs(message: types.Message) -> None:
     barn_accumulation = get_resource(message.from_user.id, "barn_accumulation") # 150
     if db.execute("SELECT barn_accumulation FROM users WHERE id=?", params=(message.from_user.id, ), fethcone=True)[0] > chicken_give: # Проверяем место в амбаре
         if eggs_for_catch >= 1: # Проверяем количество яиц. Должна быть хотя-бы одна штука
-            db.execute(f"UPDATE user_items SET milk = {eggs_count + eggs_for_catch} WHERE user_id=?", params=(message.from_user.id, ), commit=True) # добавляем яйца игроку
+            db.execute(f"UPDATE user_items SET egg = {eggs_count + eggs_for_catch} WHERE user_id=?", params=(message.from_user.id, ), commit=True) # добавляем яйца игроку
             db.execute(f"UPDATE users SET barn_accumulation = {barn_accumulation - eggs_for_catch}", commit=True) # Убираем место из амбара
-            db.execute(f"UPDATE temp_items SET milk = 0 WHERE user_id=?", params=(message.from_user.id, ), commit=True) # обнуляем временные яйца
+            db.execute(f"UPDATE temp_items SET egg = 0 WHERE user_id=?", params=(message.from_user.id, ), commit=True) # обнуляем временные яйца
             await message.answer("Вы успешно собрали все яйца!")
             await message.answer()
         else:
