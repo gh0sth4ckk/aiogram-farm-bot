@@ -1,4 +1,3 @@
-from functools import partial
 from loader import db
 from models.get_user_info import get_resource
 

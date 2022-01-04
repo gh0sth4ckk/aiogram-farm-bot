@@ -2,6 +2,8 @@
 Ярмарка для продажи ресурсов.
 """
 from aiogram import types
+from aiogram.utils.markdown import hbold
+
 from loader import dp, db
 
 from keyboards.inline.profile_buttons import profile_callback
@@ -36,14 +38,11 @@ async def fair(message: types.Message) -> None:
 
     msg = f"""
 Добро пожаловать на ярмарку! Здесь, ты можешь продать свои ресурсы и получить за это деньги.
-1 шерсть - {one_wool_cost} монеты
-1 яйцо - {one_egg_cost} монеты
-1 молоко - {one_milk_cost} монет
 
 Вы можете продать...
-Шерсть за {wool_for_sale} монет 
-Яйца за {eggs_for_sale} монет
-Молоко за {milk_for_sale} монет
+Шерсть за {hbold(wool_for_sale)} монет 💰
+Яйца за {hbold(eggs_for_sale)} монет 💰
+Молоко за {hbold(milk_for_sale)} монет 💰
 """
 
     await dp.bot.send_message(message.from_user.id, msg, reply_markup=fair_keyboard)
@@ -53,30 +52,39 @@ async def fair(message: types.Message) -> None:
 @dp.callback_query_handler(fair_callback.filter(product="wool"))
 async def wool_sale(call: types.CallbackQuery) -> None:
     wool = get_item(call.from_user.id, "wool")
-    db.execute(f"UPDATE user_items SET wool = 0 WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Убираем всю шерсть
-    db.execute(f"UPDATE users SET coins = coins + {wool_for_sale} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем деньги
-    db.execute(f"UPDATE users SET barn_accumulation =  barn_accumulation + {wool} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем место в амбар
-    give_points(call.from_user.id, 15)
-    await call.answer("Шерсть успешно продана! Вы получили 15 очков опыта")
+    if wool >= 1:
+        db.execute(f"UPDATE user_items SET wool = 0 WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Убираем всю шерсть
+        db.execute(f"UPDATE users SET coins = coins + {wool_for_sale} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем деньги
+        db.execute(f"UPDATE users SET barn_accumulation =  barn_accumulation + {wool} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем место в амбар
+        give_points(call.from_user.id, 15)
+        await call.answer("✅ Шерсть успешно продана! Вы получили 15 очков опыта")
+    else:
+        await call.answer("❌ У вас нет шерсти для продажи")
 
 
 # ПРОДАТЬ ЯЙЦА
 @dp.callback_query_handler(fair_callback.filter(product="eggs"))
 async def wool_sale(call: types.CallbackQuery) -> None:
     eggs = get_item(call.from_user.id, "egg")
-    db.execute(f"UPDATE user_items SET egg = 0 WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Убираем все яйца
-    db.execute(f"UPDATE users SET coins = coins + {eggs_for_sale} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем деньги
-    db.execute(f"UPDATE users SET barn_accumulation =  barn_accumulation + {eggs} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем место в амбар
-    give_points(call.from_user.id, 30)
-    await call.answer("Яйца успешно проданы! Вы получили 30 очков опыта")
+    if eggs >= 1:
+        db.execute(f"UPDATE user_items SET egg = 0 WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Убираем все яйца
+        db.execute(f"UPDATE users SET coins = coins + {eggs_for_sale} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем деньги
+        db.execute(f"UPDATE users SET barn_accumulation =  barn_accumulation + {eggs} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем место в амбар
+        give_points(call.from_user.id, 30)
+        await call.answer("✅ Яйца успешно проданы! Вы получили 30 очков опыта")
+    else:
+        await call.answer("❌ У вас нет яиц для продажи")
 
 
 # ПРОДАТЬ МОЛОКО
 @dp.callback_query_handler(fair_callback.filter(product="milk"))
 async def wool_sale(call: types.CallbackQuery) -> None:
     milk = get_item(call.from_user.id, "milk")
-    db.execute(f"UPDATE user_items SET milk = 0 WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Убираем всё молоко
-    db.execute(f"UPDATE users SET coins = coins + {milk_for_sale} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем деньги
-    db.execute(f"UPDATE users SET barn_accumulation =  barn_accumulation + {milk} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем место в амбар
-    give_points(call.from_user.id, 50)
-    await call.answer("Молоко успешно продано! Вы получили 50 очков опыта")
+    if milk >= 1:
+        db.execute(f"UPDATE user_items SET milk = 0 WHERE user_id=?", params=(call.from_user.id, ), commit=True) # Убираем всё молоко
+        db.execute(f"UPDATE users SET coins = coins + {milk_for_sale} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем деньги
+        db.execute(f"UPDATE users SET barn_accumulation =  barn_accumulation + {milk} WHERE id=?", params=(call.from_user.id, ), commit=True) # Добавляем место в амбар
+        give_points(call.from_user.id, 50)
+        await call.answer("✅ Молоко успешно продано! Вы получили 50 очков опыта")
+    else:
+        await call.answer("❌ У вас нет молока для продажи")

@@ -22,9 +22,9 @@ async def get_user_profile(message: types.Message) -> None:
     wood = get_resource(userid, "wood")
 
     await message.answer("\n".join([
-        f"Профиль игрока {hbold(username)}:",
-        f"Уровень: {hbold(level)}",
+        f"📌 Профиль игрока {hbold(username)} 📌",
+        f"💠 Уровень: {hbold(level)}",
         "\n",
-        f"Монеты: {hbold(coins)}",
-        f"Дерево: {hbold(wood)}",
+        f"💰 Монеты: {hbold(coins)}",
+        f"🪵 Дерево: {hbold(wood)}",
     ]), reply_markup=profile_keyboard)

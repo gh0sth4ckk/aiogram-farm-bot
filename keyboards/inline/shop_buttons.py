@@ -9,11 +9,11 @@ animals_callback = CallbackData("animals_shop", "animal")
 
 shop_keyboard = InlineKeyboardMarkup(row_width=3, inline_keyboard=[
     [
-        InlineKeyboardButton(text="Дома", callback_data=shop_callback.new("houses")),
-        InlineKeyboardButton(text="Животные", callback_data=shop_callback.new("animals"))
+        InlineKeyboardButton(text="🏠 Дома", callback_data=shop_callback.new("houses")),
+        InlineKeyboardButton(text="🐶 Животные", callback_data=shop_callback.new("animals"))
     ],
-    [InlineKeyboardButton(text="Купить доски", callback_data=shop_callback.new("wood"))],
-    [InlineKeyboardButton(text="Купить место в амбаре", callback_data=shop_callback.new("barn"))]
+    [InlineKeyboardButton(text="🪵 Купить доски", callback_data=shop_callback.new("wood"))],
+    [InlineKeyboardButton(text="📦 Купить место в амбаре", callback_data=shop_callback.new("barn"))]
 ])
 
 wood_shop_keyboard = InlineKeyboardMarkup(row_width=1, inline_keyboard=[
