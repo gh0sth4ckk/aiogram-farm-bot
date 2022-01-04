@@ -15,4 +15,4 @@ python3 bot.py
 py bot.py
 ```
 
-*Sorry for the russian parts of the comments in the code :) Good Luck!
+*Sorry for the russian parts of the comments in the code :) Good Luck!*
