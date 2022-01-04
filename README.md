@@ -6,13 +6,13 @@ Small farm mini-game. Implemented such things as:
 Accordingly, there is also a database, sqlite (There is a dump in the models / dump.sql folder).
 
 # Usage
-## Linux
+### Linux
 ```bash
 python3 bot.py
 ```
-## Windows
+### Windows
 ```powershell
 py bot.py
 ```
 
-### Sorry for the russian parts of the comments in the code :) Good Luck!
+*Sorry for the russian parts of the comments in the code :) Good Luck!
